@@ -1,0 +1,376 @@
+@import "tailwindcss";
+
+/* Explicit sources: the app, components and lib folders. */
+@source "../app";
+@source "../components";
+@source "../lib";
+
+/*
+ * Design tokens.
+ *
+ * The palette is a warm, low-saturation romance: deep plum backgrounds,
+ * blush midtones, cream surfaces and gold accents. Everything is defined
+ * once here and consumed through Tailwind utilities (bg-plum-950, text-cream-50…).
+ */
+@theme {
+  /* Plum — the night the experience happens in. */
+  --color-plum-950: #150b19;
+  --color-plum-900: #1e1024;
+  --color-plum-850: #27142e;
+  --color-plum-800: #331a3a;
+  --color-plum-700: #45224d;
+  --color-plum-600: #5c2f66;
+  --color-plum-500: #76407f;
+
+  /* Blush — warmth, the blush on the cheek. */
+  --color-blush-600: #b96b80;
+  --color-blush-500: #d1839a;
+  --color-blush-400: #dd9bad;
+  --color-blush-300: #e9b8c3;
+  --color-blush-200: #f3d5dc;
+  --color-blush-100: #fae9ed;
+
+  /* Cream — paper, light, the letter itself. */
+  --color-cream-50: #fdf9f4;
+  --color-cream-100: #f8f0e6;
+  --color-cream-200: #f0e3d4;
+  --color-cream-300: #e3d1bd;
+  --color-cream-400: #c9b49c;
+
+  /* Gold — the small, precious accents. */
+  --color-gold-600: #b48b3f;
+  --color-gold-500: #c9a253;
+  --color-gold-400: #dcbd76;
+  --color-gold-300: #ecd59c;
+
+  /* Semantic surfaces. */
+  --color-surface: var(--color-plum-950);
+  --color-surface-raised: var(--color-plum-900);
+  --color-ink: var(--color-cream-100);
+  --color-ink-muted: var(--color-cream-400);
+
+  /* Shared easing curves — slow, organic, never bouncy. */
+  --ease-romance: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-veil: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Type scale for the display face. */
+  --text-display-xs: 1.5rem;
+  --text-display-xs--line-height: 1.2;
+  --text-display-sm: 2rem;
+  --text-display-sm--line-height: 1.15;
+  --text-display-md: 2.75rem;
+  --text-display-md--line-height: 1.08;
+  --text-display-lg: 3.75rem;
+  --text-display-lg--line-height: 1.02;
+  --text-display-xl: 5rem;
+  --text-display-xl--line-height: 0.98;
+}
+
+@theme inline {
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* ---------------------------------------------------------------- base -- */
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-plum-950);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "kern", "liga";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: var(--color-blush-500);
+    color: var(--color-plum-950);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold-400);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* ------------------------------------------------------------ utilities -- */
+
+@utility page-shell {
+  width: 100%;
+  max-width: 46rem;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+
+  @media (min-width: 48rem) {
+    padding-inline: 2.5rem;
+  }
+}
+
+/* A soft, slightly warm glass panel used for cards and the access form. */
+@utility panel {
+  background-color: color-mix(in oklab, var(--color-plum-900) 72%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-blush-300) 14%, transparent);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 1px 0 0 color-mix(in oklab, var(--color-cream-100) 6%, transparent) inset,
+    0 24px 60px -32px rgb(0 0 0 / 0.8);
+  backdrop-filter: blur(14px);
+}
+
+/* ------------------------------------------------------------- ambient -- */
+
+@keyframes ambient-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2.5%, -3%, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes ambient-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.ambient-drift {
+  animation: ambient-drift 34s var(--ease-veil) infinite;
+}
+
+.ambient-breathe {
+  animation: ambient-breathe 18s var(--ease-veil) infinite;
+}
+
+/* Film grain, generated inline — no raster asset is downloaded. */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* -------------------------------------------------------------- letter -- */
+
+/*
+ * Typography for the rendered Markdown letter. The HTML is sanitized on the
+ * server before it reaches this point, so only the tags below can appear.
+ */
+.letter-body {
+  font-family: var(--font-display);
+  font-size: clamp(1.125rem, 0.98rem + 0.6vw, 1.375rem);
+  line-height: 1.85;
+  color: var(--color-cream-100);
+}
+
+.letter-body > * + * {
+  margin-top: 1.5em;
+}
+
+/*
+ * The letter body is rendered as a sequence of top-level blocks, each in its
+ * own element. The spacing between blocks is handled by the rule above, so
+ * the elements inside a block must not add their own margins.
+ */
+.letter-body p,
+.letter-body ul,
+.letter-body ol,
+.letter-body blockquote,
+.letter-body pre,
+.letter-body h2,
+.letter-body h3,
+.letter-body h4,
+.letter-body h5,
+.letter-body h6 {
+  margin: 0;
+}
+
+.letter-body h2 {
+  font-size: clamp(1.5rem, 1.3rem + 0.9vw, 2rem);
+  font-weight: 300;
+  color: var(--color-blush-200);
+}
+
+.letter-body h3 {
+  font-size: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+  font-weight: 400;
+  color: var(--color-blush-200);
+}
+
+.letter-body strong {
+  font-weight: 600;
+  color: var(--color-gold-300);
+}
+
+.letter-body em {
+  font-style: italic;
+  color: var(--color-blush-200);
+}
+
+.letter-body a {
+  color: var(--color-blush-300);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  text-decoration-color: color-mix(in oklab, var(--color-blush-400) 45%, transparent);
+  transition: text-decoration-color 220ms var(--ease-veil);
+}
+
+.letter-body a:hover {
+  text-decoration-color: var(--color-blush-300);
+}
+
+.letter-body ul,
+.letter-body ol {
+  padding-left: 1.25em;
+}
+
+.letter-body ul {
+  list-style: none;
+}
+
+.letter-body ul > li {
+  position: relative;
+}
+
+.letter-body ul > li::before {
+  content: "";
+  position: absolute;
+  left: -1em;
+  top: 0.78em;
+  width: 0.35em;
+  height: 0.35em;
+  border-radius: 9999px;
+  background-color: var(--color-gold-400);
+}
+
+.letter-body ol {
+  list-style: decimal;
+}
+
+.letter-body ol > li::marker {
+  color: var(--color-gold-400);
+}
+
+.letter-body li + li {
+  margin-top: 0.6em;
+}
+
+.letter-body blockquote {
+  margin-inline: 0;
+  padding-left: 1.25em;
+  border-left: 1px solid color-mix(in oklab, var(--color-blush-300) 28%, transparent);
+  font-style: italic;
+  color: var(--color-blush-200);
+}
+
+.letter-body hr {
+  border: 0;
+  height: 1px;
+  margin-block: 2.5em;
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in oklab, var(--color-blush-300) 35%, transparent),
+    transparent
+  );
+}
+
+.letter-body code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 0.1em 0.35em;
+  border-radius: 0.35em;
+  background-color: color-mix(in oklab, var(--color-plum-800) 70%, transparent);
+}
+
+.letter-body pre {
+  overflow-x: auto;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  background-color: color-mix(in oklab, var(--color-plum-800) 70%, transparent);
+}
+
+.letter-body pre code {
+  padding: 0;
+  background: none;
+}
+
+.letter-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+}
+
+/* -------------------------------------------------------------- reveal -- */
+
+/*
+ * Staged entrance for the reveal blocks.
+ *
+ * Driven by CSS so it works without JavaScript: the base state of the element
+ * is its final, visible state, and the animation only decorates it.
+ */
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+[data-reveal] {
+  animation: reveal-rise 900ms var(--ease-romance) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+/* -------------------------------------------------------- reduced motion -- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .ambient-drift,
+  .ambient-breathe {
+    animation: none !important;
+  }
+}

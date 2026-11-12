@@ -1,0 +1,71 @@
+import { NextResponse, type NextRequest } from "next/server";
+
+/**
+ * Content Security Policy.
+ *
+ * The policy is nonce-based: a fresh nonce is generated for every response
+ * and Next.js picks it up from the request header, applying it to the
+ * scripts and styles it injects. That keeps `script-src` free of
+ * `'unsafe-inline'`, so an injected script cannot run even if the Markdown
+ * sanitiser were ever bypassed.
+ *
+ * The policy is intentionally *not* set in `next.config.ts`: the nonce has to
+ * be generated per request, and the response header has to match the request
+ * header exactly.
+ */
+
+function buildContentSecurityPolicy(nonce: string): string {
+  return [
+    "default-src 'self'",
+    // `strict-dynamic` lets the nonced bootstrap script load the chunks it
+    // needs; older browsers fall back to `'self'`.
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+    // Inline styles are still needed for the ambient background and for the
+    // reveal delays.
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob:",
+    "font-src 'self' data:",
+    "connect-src 'self'",
+    // The Spotify embed is the only third-party frame we allow.
+    "frame-src https://open.spotify.com",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    // The private experience must never be embedded elsewhere.
+    "frame-ancestors 'none'",
+    "upgrade-insecure-requests",
+  ].join("; ");
+}
+
+export default function proxy(request: NextRequest) {
+  const nonce = btoa(crypto.randomUUID());
+  const policy = buildContentSecurityPolicy(nonce);
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("Content-Security-Policy", policy);
+
+  const response = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
+
+  response.headers.set("Content-Security-Policy", policy);
+
+  return response;
+}
+
+export const config = {
+  matcher: [
+    {
+      /*
+       * Everything that renders HTML, except the static assets and the API
+       * routes, whose JSON responses need no policy.
+       */
+      source: "/((?!api|_next/static|_next/image|favicon.ico).*)",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+  ],
+};

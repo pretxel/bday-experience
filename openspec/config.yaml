@@ -1,0 +1,53 @@
+schema: spec-driven
+
+context: |
+  Project: Birthday Experience — a private, single-recipient birthday website.
+
+  Stack: Next.js (App Router), TypeScript strict mode, React, Tailwind CSS,
+  Framer Motion, Markdown content files, Vercel deployment, GitHub.
+
+  Product: The recipient opens a personalized URL /[slug], passes a shared secret
+  code, then browses a welcome page, a Spotify playlist page, and a letter page.
+
+  Hard constraints (do not violate):
+  - No Supabase, no PostgreSQL or any database, no separate Fastify backend, no external CMS.
+  - No mutable runtime state stored in the filesystem.
+  - Private Markdown content must live outside `public/`.
+  - Markdown is parsed and rendered on the server only; rendered HTML must be sanitized.
+  - Single shared access code; only a salted scrypt hash is stored in env vars.
+  - Sessions are HMAC-SHA256 signed cookies: HttpOnly, Secure in prod, SameSite=Lax, expiring.
+  - Constant-time comparison for hash/signature checks; generic auth error messages.
+  - Rate limiting must be Vercel-compatible (no in-memory serverless counters).
+  - Protected pages validate the session server-side; `noindex` metadata on private routes.
+  - Must remain deployable as Vercel serverless functions.
+
+  Conventions: App Router with route handlers under `app/api`, server components by
+  default, `lib/` for shared server utilities, `content/` for Markdown sources,
+  `zod` for request and frontmatter validation, `gray-matter` + `remark`/
+  `remark-rehype` + `rehype-sanitize` for Markdown, `vitest` for unit tests of
+  the security-critical modules.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+rules:
+  proposal:
+    - Keep the proposal under 700 words.
+    - Always include a "Non-goals" section.
+  design:
+    - Document the security model end to end (auth flow, hashing, session signing, rate limiting).
+    - Include a data flow section for Markdown loading and rendering.
+    - Document error states and fallbacks for missing or invalid content.
+  tasks:
+    - Break tasks into chunks of max 2 hours.
+    - Order tasks so the project builds and passes typecheck at every checkpoint.
+    - Include explicit verification steps (typecheck, lint, build) per task group.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
