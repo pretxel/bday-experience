@@ -330,6 +330,26 @@ async function main() {
     );
   }
 
+  // ------------------------------------------------------------ the root --
+  /*
+   * The root is a 404 on purpose. It is also the page most likely to render
+   * blank: it is prerendered by default, and a prerendered document cannot
+   * carry the per-request CSP nonce, so every inline script in it is blocked
+   * and React never hydrates.
+   */
+  console.log("\nRoot path");
+  const rootResponse = await page.goto(`${BASE_URL}/`, {
+    waitUntil: "domcontentloaded",
+  });
+  await new Promise((resolve) => setTimeout(resolve, 1200));
+
+  const rootText = await page.evaluate(() => document.body.innerText.trim());
+  const rootStatus = rootResponse ? rootResponse.status() : 0;
+
+  check("the root path answers with a 404", rootStatus === 404, `status=${rootStatus}`);
+  check("the root path is not blank", rootText.length > 0, `${rootText.length} characters of text`);
+  check("the root path does not leak the slug", !rootText.includes(SLUG));
+
   // ---------------------------------------------------------------- errors --
   console.log("\nRuntime");
 
