@@ -1,6 +1,9 @@
-import Link from "next/link";
-
-/** The root not-found page. */
+/**
+ * The root not-found page.
+ *
+ * There is no link back: the root is a dead end on purpose, and pointing
+ * anywhere would either leak the slug or land on this same page.
+ */
 export default function NotFound() {
   return (
     <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 text-center">
@@ -11,14 +14,9 @@ export default function NotFound() {
         Aquí no hay nada
       </h1>
       <p className="mt-5 max-w-sm text-sm leading-relaxed text-blush-200/55">
-        Puede que esta dirección no exista, o que el enlace haya cambiado.
+        Esta experiencia tiene su propia dirección. Si te la han compartido,
+        ábrela tal cual, con el enlace completo.
       </p>
-      <Link
-        href="/"
-        className="mt-9 rounded-xl border border-blush-300/20 px-6 py-3 text-sm tracking-[0.18em] text-cream-100 uppercase transition-colors duration-300 hover:border-gold-400/50 hover:text-gold-300"
-      >
-        Volver
-      </Link>
     </div>
   );
 }

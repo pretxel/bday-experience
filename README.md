@@ -39,8 +39,8 @@ openssl rand -hex 32
 npm run dev
 ```
 
-Abre <http://localhost:3000>. La raíz redirige al slug configurado en
-`RECIPIENT_SLUG` (por defecto `ana`).
+Abre <http://localhost:3000>/<slug>. La raíz (`/`) muestra un 404 a propósito:
+el enlace completo es la única forma de entrar.
 
 El código de ejemplo en `.env.local` es `prueba-dev-123`; cámbialo antes de
 desplegar.
@@ -54,7 +54,7 @@ desplegar.
 | `ACCESS_CODE_HASH` | Sí | Digest SHA-256 (hex) de la clave derivada con scrypt. Nunca el código en claro. |
 | `ACCESS_CODE_SALT` | Sí | Sal (hex) usada para derivar la clave. |
 | `SESSION_SECRET` | Sí | Secreto de al menos 32 caracteres con el que se firma la cookie de sesión. |
-| `RECIPIENT_SLUG` | No (por defecto `ana`) | Destino de la redirección de `/`. Debe coincidir con un archivo de `content/`. |
+| `RECIPIENT_SLUG` | Sí | Clave aleatoria de 8 caracteres. Debe coincidir con el nombre de un archivo de `content/` (sin la extensión). |
 | `NEXT_PUBLIC_SITE_URL` | No | Origen público del despliegue. |
 | `UPSTASH_REDIS_REST_URL` | **En producción** | Endpoint REST de Upstash Redis. Sin él, el endpoint de acceso no está limitado. |
 | `UPSTASH_REDIS_REST_TOKEN` | **En producción** | Token del endpoint REST. |
@@ -90,7 +90,7 @@ El código en claro nunca se escribe en disco ni se vuelve a imprimir.
 
 | Ruta | Descripción |
 |---|---|
-| `/` | Redirige a `/${RECIPIENT_SLUG}`. |
+| `/` | Muestra la página de «no encontrado». No redirige a nada: la raíz es un callejón sin salida a propósito. |
 | `/[slug]` | Pantalla del código de acceso. |
 | `/[slug]/bienvenida` | Bienvenida personalizada. |
 | `/[slug]/playlist` | Playlist de Spotify incrustada. |
@@ -106,7 +106,14 @@ Cada destinatario tiene su propio archivo Markdown en `content/`:
 
 ```text
 content/
-  ana.md
+  8efyvkwz.md
+```
+
+El nombre del archivo **es** el slug de la URL. Se genera aleatorio para que
+la dirección no se pueda adivinar:
+
+```bash
+npm run generate-slug -- --rename <slug-anterior>
 ```
 
 ```markdown
@@ -143,8 +150,8 @@ contenido no puede inyectar scripts.
 
 ### Añadir otro destinatario
 
-1. Crea `content/<otro-slug>.md`.
-2. Si es el predeterminado, cambia `RECIPIENT_SLUG`.
+1. Genera el slug y el archivo: `npm run generate-slug -- --rename <slug-anterior>`.
+2. Si es el predeterminado, cambia `RECIPIENT_SLUG` en `.env.local` y en Vercel.
 
 No hace falta tocar el código ni crear una tabla en ninguna base de datos.
 
@@ -284,7 +291,7 @@ components/
   motion/                        # Reveal, PageTransition, MotionProvider
   layout/                        # navegación y pie
 content/
-  ana.md                         # contenido por destinatario
+  8efyvkwz.md                   # contenido por destinatario (nombre = slug)
 lib/
   auth/                          # hash, sesión, cookies, guard
   content/                       # esquema, carga y renderizado del Markdown
@@ -295,6 +302,7 @@ lib/
 proxy.ts                         # Content-Security-Policy con nonce
 scripts/
   hash-code.mjs                  # genera hash y sal
+  generate-slug.mjs              # genera el slug aleatorio y renombra el contenido
   generate-favicon.mjs           # genera favicon.ico y apple-icon.png
   verify-visual.mjs              # comprobaciones en un navegador real
 tests/                           # vitest

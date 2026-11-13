@@ -51,11 +51,15 @@ Stakeholders are effectively two: the person building it (maintainer) and the si
 
 ### 2. Slug as configuration, content addressed by filename
 
-**Decision.** The recipient slug comes from `RECIPIENT_SLUG` (default `ana`). `content/<slug>.md` holds that recipient's content. `/` redirects to `/${RECIPIENT_SLUG}`.
+**Decision.** The recipient slug comes from `RECIPIENT_SLUG` and is a random eight-character key (`scripts/generate-slug.mjs`). `content/<slug>.md` holds that recipient's content. `/` responds with a not-found page rather than redirecting.
 
 **Rationale.** The slug must be changeable without duplicating logic, and content must not live in `public/`. Keying the Markdown filename by slug makes a second recipient a pure file addition plus an env change, with no database.
 
-**Alternatives considered.** *A single `content/index.md`* — rejected; it cannot support multiple slugs. *Slug embedded in a JSON manifest* — rejected as redundant, since the content file's frontmatter already carries the metadata.
+Making the slug random is what makes the URL itself unguessable: a slug like `ana` gives the recipient's name away to anyone who guesses the domain, and it makes the link something that has to be shared carefully. Eight characters from a 30-symbol alphabet is roughly 6.5 × 10¹¹ possibilities.
+
+Because of that, `/` deliberately does not redirect to the slug. A redirect would hand the location to anyone who typed the root domain, which defeats the point of a random key. The root is a dead end that says the experience has its own address, and the only way in is the full link.
+
+**Alternatives considered.** *A single `content/index.md`* — rejected; it cannot support multiple slugs. *Slug embedded in a JSON manifest* — rejected as redundant, since the content file's frontmatter already carries the metadata. *Readable slugs like `ana`* — rejected; they leak the name and are guessable.
 
 ### 3. Access code stored as a salted scrypt hash, never as plaintext
 

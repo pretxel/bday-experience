@@ -2,13 +2,15 @@ import { describe, expect, it } from "vitest";
 
 import { getContent, hasContent } from "@/lib/content/loader";
 
+import { TEST_SLUG } from "../setup";
+
 describe("getContent", () => {
   it("loads the content of an existing recipient", async () => {
-    const result = await getContent("ana");
+    const result = await getContent(TEST_SLUG);
 
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.content.slug).toBe("ana");
+      expect(result.content.slug).toBe(TEST_SLUG);
       expect(result.content.recipient).toBe("Ana");
       expect(result.content.title.length).toBeGreaterThan(0);
       expect(result.content.dateLabel.length).toBeGreaterThan(0);
@@ -17,7 +19,7 @@ describe("getContent", () => {
   });
 
   it("canonicalises the Spotify playlist URL", async () => {
-    const result = await getContent("ana");
+    const result = await getContent(TEST_SLUG);
 
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -42,7 +44,7 @@ describe("getContent", () => {
 
 describe("hasContent", () => {
   it("is true for an existing recipient", async () => {
-    await expect(hasContent("ana")).resolves.toBe(true);
+    await expect(hasContent(TEST_SLUG)).resolves.toBe(true);
   });
 
   it("is false for an unknown recipient", async () => {

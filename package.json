@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "hash-code": "node scripts/hash-code.mjs",
+    "generate-slug": "node scripts/generate-slug.mjs",
     "generate-favicon": "node scripts/generate-favicon.mjs"
   },
   "dependencies": {

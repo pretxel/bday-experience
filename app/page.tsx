@@ -1,13 +1,12 @@
-import { redirect } from "next/navigation";
-
-import { env } from "@/lib/config/env";
+import { notFound } from "next/navigation";
 
 /**
- * The root path redirects to the configured recipient.
+ * The root path.
  *
- * Changing `RECIPIENT_SLUG` is all it takes to point the deployment at a
- * different person.
+ * It does not redirect anywhere: the experience lives at a random, unguessable
+ * slug, and pointing `/` at it would give the location away to anyone who
+ * typed the domain. Whoever the experience is for opens the full link.
  */
 export default function RootPage(): never {
-  redirect(`/${env.RECIPIENT_SLUG}`);
+  notFound();
 }

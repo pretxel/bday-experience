@@ -3,6 +3,7 @@ import { SiteNav } from "@/components/layout/SiteNav";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { requireSession } from "@/lib/auth/guard";
+import { getContent } from "@/lib/content/loader";
 
 /**
  * The protected shell.
@@ -21,13 +22,21 @@ export default async function ProtectedLayout({
 
   await requireSession(slug);
 
+  /*
+   * The recipient's name comes from the content, never from the slug: the
+   * slug is a random key and says nothing about who the experience is for.
+   * The loader is memoised per request, so this costs nothing extra.
+   */
+  const result = await getContent(slug);
+  const recipient = result.ok ? result.content.recipient : null;
+
   return (
     <MotionProvider>
       <SiteNav slug={slug} />
       <main className="flex-1">
         <PageTransition>{children}</PageTransition>
       </main>
-      <SiteFooter slug={slug} />
+      <SiteFooter recipient={recipient} />
     </MotionProvider>
   );
 }

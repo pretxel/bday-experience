@@ -1,26 +1,34 @@
 ## ADDED Requirements
 
 ### Requirement: Slug-addressed route structure
-The system SHALL expose the routes `/[slug]`, `/[slug]/bienvenida`, `/[slug]/playlist`, and `/[slug]/carta`, and SHALL render the same layout and behavior for every slug without duplicating application logic.
+The system SHALL expose the routes `/[slug]`, `/[slug]/bienvenida`, `/[slug]/playlist`, and `/[slug]/carta`, and SHALL render the same layout and behavior for every slug without duplicating application logic. The slug SHALL be a random key of at least eight characters.
 
 #### Scenario: Routes resolve for a slug
-- **WHEN** a visitor requests `/ana`, `/ana/bienvenida`, `/ana/playlist`, or `/ana/carta`
-- **THEN** the corresponding page is rendered for the `ana` recipient
+- **WHEN** a visitor requests `/8efyvkwz`, `/8efyvkwz/bienvenida`, `/8efyvkwz/playlist`, or `/8efyvkwz/carta`
+- **THEN** the corresponding page is rendered for that recipient
 
 #### Scenario: Implementation is not duplicated per slug
 - **WHEN** the route implementation is inspected
 - **THEN** a single dynamic route implementation serves every slug
 
-### Requirement: Root redirect
-The system SHALL redirect the root path `/` to the configured recipient slug, and the configured slug MUST be changeable through environment configuration alone.
+#### Scenario: The slug is not guessable
+- **WHEN** the slug is generated
+- **THEN** it consists of eight random characters, so the URL cannot be guessed from the name of the recipient
+
+### Requirement: Root path
+The system SHALL respond with a not-found page at the root path, and SHALL NOT redirect to the recipient slug. The recipient slug is a random, unguessable key, so pointing the root at it would reveal where the experience lives to anyone who typed the domain.
 
 #### Scenario: Visiting the root path
 - **WHEN** a visitor requests `/`
-- **THEN** the server responds with a redirect to `/${RECIPIENT_SLUG}`
+- **THEN** the server responds with a not-found page that contains no link to the experience
 
-#### Scenario: Recipient slug is reconfigured
-- **WHEN** the configured recipient slug is changed and the application is restarted
-- **THEN** `/` redirects to the new slug with no code change
+#### Scenario: The root page does not leak the slug
+- **WHEN** the root path is requested
+- **THEN** neither the response body nor the `Location` header mentions the recipient slug
+
+#### Scenario: The experience is reached only by its full link
+- **WHEN** a visitor opens `/${RECIPIENT_SLUG}`
+- **THEN** the access gate renders normally
 
 ### Requirement: Protected route group
 The system SHALL place all private pages inside a single protected route group whose layout performs the session validation, so that every private page inherits the guard and the access-code gate remains outside it. Each private page SHALL additionally verify the session before reading any private content.

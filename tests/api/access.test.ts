@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { POST } from "@/app/api/access/route";
 
-import { TEST_ACCESS_CODE } from "../setup";
+import { TEST_ACCESS_CODE, TEST_SLUG } from "../setup";
 
 function accessRequest(body: unknown, ip = "203.0.113.10"): Request {
   return new Request("http://localhost/api/access", {
@@ -18,7 +18,7 @@ function accessRequest(body: unknown, ip = "203.0.113.10"): Request {
 describe("POST /api/access", () => {
   it("grants a session for the correct code", async () => {
     const response = await POST(
-      accessRequest({ code: TEST_ACCESS_CODE, slug: "ana" }),
+      accessRequest({ code: TEST_ACCESS_CODE, slug: TEST_SLUG }),
     );
 
     expect(response.status).toBe(200);
@@ -29,7 +29,7 @@ describe("POST /api/access", () => {
 
   it("rejects an incorrect code with a generic error", async () => {
     const response = await POST(
-      accessRequest({ code: "not-the-code", slug: "ana" }),
+      accessRequest({ code: "not-the-code", slug: TEST_SLUG }),
     );
 
     expect(response.status).toBe(401);
@@ -42,7 +42,7 @@ describe("POST /api/access", () => {
 
   it("returns a byte-identical response for an unknown slug and a wrong code", async () => {
     const wrongCode = await POST(
-      accessRequest({ code: "not-the-code", slug: "ana" }),
+      accessRequest({ code: "not-the-code", slug: TEST_SLUG }),
     );
     const unknownSlug = await POST(
       accessRequest({ code: TEST_ACCESS_CODE, slug: "unknown-recipient" }),
@@ -54,7 +54,7 @@ describe("POST /api/access", () => {
   });
 
   it("rejects a malformed body", async () => {
-    const response = await POST(accessRequest({ slug: "ana" }));
+    const response = await POST(accessRequest({ slug: TEST_SLUG }));
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
@@ -65,7 +65,7 @@ describe("POST /api/access", () => {
 
   it("rejects an oversized code before hashing it", async () => {
     const response = await POST(
-      accessRequest({ code: "a".repeat(200), slug: "ana" }),
+      accessRequest({ code: "a".repeat(200), slug: TEST_SLUG }),
     );
 
     expect(response.status).toBe(400);

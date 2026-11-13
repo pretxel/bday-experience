@@ -1,6 +1,8 @@
-import Link from "next/link";
-
-/** The not-found page for a recipient. */
+/**
+ * The not-found page for a recipient.
+ *
+ * No link back either: the only way in is the full, correct link.
+ */
 export default function SlugNotFound() {
   return (
     <main className="page-shell flex flex-1 flex-col items-center justify-center py-24 text-center">
@@ -14,12 +16,6 @@ export default function SlugNotFound() {
         Puede que el enlace esté mal escrito, o que esta sorpresa sea para
         otra persona.
       </p>
-      <Link
-        href="/"
-        className="mt-9 rounded-xl border border-blush-300/20 px-6 py-3 text-sm tracking-[0.18em] text-cream-100 uppercase transition-colors duration-300 hover:border-gold-400/50 hover:text-gold-300"
-      >
-        Volver
-      </Link>
     </main>
   );
 }
