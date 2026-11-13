@@ -13,13 +13,27 @@
  */
 
 import { mkdir } from "node:fs/promises";
-import { existsSync as existsSyncSync } from "node:fs";
+import { existsSync as existsSyncSync, readdirSync } from "node:fs";
 import path from "node:path";
 
 import puppeteer from "puppeteer-core";
 
 const BASE_URL = process.argv[2] ?? "http://localhost:3000";
-const SLUG = process.env.RECIPIENT_SLUG ?? "ana";
+
+/**
+ * The recipient slug.
+ *
+ * The slug is a random key that changes whenever the content file is
+ * renamed, so it is read from `content/` rather than hard-coded. Set
+ * `RECIPIENT_SLUG` to override it.
+ */
+const SLUG =
+  process.env.RECIPIENT_SLUG ??
+  readdirSync(path.join(process.cwd(), "content"))
+    .filter((file) => file.endsWith(".md"))
+    .map((file) => file.replace(/\.md$/, ""))
+    .sort()[0];
+
 const CODE = process.env.ACCESS_CODE ?? "";
 
 const CHROME_CANDIDATES = [
