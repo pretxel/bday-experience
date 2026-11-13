@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Birthday Experience">
+  <defs>
+    <linearGradient id="plum" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#3a1d42" />
+      <stop offset="1" stop-color="#150b19" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#f0dcae" />
+      <stop offset="0.55" stop-color="#dcbd76" />
+      <stop offset="1" stop-color="#b48b3f" />
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.42" r="0.6">
+      <stop offset="0" stop-color="#e9b8c3" stop-opacity="0.28" />
+      <stop offset="1" stop-color="#e9b8c3" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="14" fill="url(#plum)" />
+  <rect width="64" height="64" rx="14" fill="url(#glow)" />
+
+  <path
+    fill="url(#gold)"
+    d="M32 53.2c-1-1.1-20-12.4-20-25.9 0-7.6 5.9-13.3 13.3-13.3 3.9 0 6.2 2 6.7 3.4.5-1.4 2.8-3.4 6.7-3.4 7.4 0 13.3 5.7 13.3 13.3 0 13.5-19 24.8-20 25.9Z"
+  />
+</svg>

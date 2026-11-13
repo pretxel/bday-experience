@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "hash-code": "node scripts/hash-code.mjs"
+    "hash-code": "node scripts/hash-code.mjs",
+    "generate-favicon": "node scripts/generate-favicon.mjs"
   },
   "dependencies": {
     "@upstash/ratelimit": "^2.2.1",

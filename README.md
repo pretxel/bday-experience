@@ -178,8 +178,16 @@ No hace falta tocar el código ni crear una tabla en ninguna base de datos.
 - **Content-Security-Policy con nonce.** `proxy.ts` genera un nonce por
   respuesta; Next.js lo aplica a sus scripts. `script-src` no incluye
   `'unsafe-inline'`.
-- **Sin indexación.** `robots` en el layout y `X-Robots-Tag: noindex, nofollow`
-  en todas las respuestas.
+- **Sin indexación.** La experiencia entera es privada, y hay tres capas
+  independientes para que ningún buscador la indexe:
+  - `X-Robots-Tag: noindex, nofollow, noarchive` en **todas** las respuestas,
+    incluidas las privadas, los iconos y las rutas inexistentes.
+  - `<meta name="robots" content="noindex, nofollow, nocache">` en el HTML,
+    más la variante específica para `googleBot` (con `noimageindex`).
+  - `robots.txt` con `Disallow: /` para todos los rastreadores.
+
+  Un rastreador que haga caso a uno de los tres se queda fuera; uno que los
+  ignore los tres se encuentra igualmente el `noindex` en los otros dos.
 - **Sin fugas en los registros.** Los detalles de los fallos se registran solo
   en el servidor.
 
@@ -226,6 +234,19 @@ npm run test        # vitest
 npm run build       # next build
 ```
 
+### Iconos
+
+El favicon se genera desde código, sin herramientas de imagen:
+
+```bash
+npm run generate-favicon
+```
+
+Escribe `app/favicon.ico` (16, 32 y 48 px), `app/apple-icon.png` (180 px) y
+comparte el diseño con `app/icon.svg`, que es el icono vectorial que usan los
+navegadores modernos. `app/icon.svg` se edita a mano; si lo cambias, vuelve a
+ejecutar el script para que los tres queden iguales.
+
 Para las comprobaciones que un test unitario no puede hacer —hidratación,
 violaciones de CSP, animaciones, legibilidad en distintos tamaños— hay un
 script que conduce un Chrome real:
@@ -246,6 +267,10 @@ Guarda las capturas en `.verification/`.
 app/
   api/access/route.ts           # verificación del código
   api/logout/route.ts           # cierre de sesión
+  icon.svg                      # icono vectorial (favicon moderno)
+  favicon.ico                   # 16/32/48 px, generado
+  apple-icon.png                # 180 px, generado
+  robots.ts                     # robots.txt con Disallow: /
   [slug]/page.tsx                # pantalla del código
   [slug]/(protected)/            # páginas privadas (guard de sesión)
     layout.tsx                   # guard + navegación
@@ -269,6 +294,7 @@ lib/
 proxy.ts                         # Content-Security-Policy con nonce
 scripts/
   hash-code.mjs                  # genera hash y sal
+  generate-favicon.mjs           # genera favicon.ico y apple-icon.png
   verify-visual.mjs              # comprobaciones en un navegador real
 tests/                           # vitest
 ```
