@@ -15,11 +15,21 @@ import { NextResponse, type NextRequest } from "next/server";
  */
 
 function buildContentSecurityPolicy(nonce: string): string {
+  /*
+   * React's development build uses `eval()` to reconstruct call stacks, so the
+   * development policy has to allow it. The production policy never does:
+   * `NODE_ENV` is inlined at build time, so this branch disappears entirely
+   * from a production bundle.
+   */
+  const isDevelopment = process.env.NODE_ENV === "development";
+
   return [
     "default-src 'self'",
     // `strict-dynamic` lets the nonced bootstrap script load the chunks it
     // needs; older browsers fall back to `'self'`.
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${
+      isDevelopment ? " 'unsafe-eval'" : ""
+    }`,
     // Inline styles are still needed for the ambient background and for the
     // reveal delays.
     "style-src 'self' 'unsafe-inline'",
