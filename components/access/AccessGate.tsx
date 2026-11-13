@@ -46,9 +46,6 @@ export function AccessGate({ slug }: { slug: string }) {
    */
   const hydrated = useHydrated();
 
-  /** The slug as a name: `ana` reads better as `Ana`. */
-  const displaySlug = slug.charAt(0).toUpperCase() + slug.slice(1);
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -105,9 +102,7 @@ export function AccessGate({ slug }: { slug: string }) {
             <span className="italic text-blush-200">para ti</span>
           </h1>
           <p className="mt-6 text-sm leading-relaxed text-blush-200/60">
-            Este sitio es solo para{" "}
-            <span className="text-blush-200/90">{displaySlug}</span>. Para
-            entrar, escribe el código que compartimos.
+            Para entrar, escribe el código que compartimos.
           </p>
         </div>
 
