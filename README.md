@@ -177,7 +177,8 @@ No hace falta tocar el código ni crear una tabla en ninguna base de datos.
   direcciones ni en el historial.
 - **Content-Security-Policy con nonce.** `proxy.ts` genera un nonce por
   respuesta; Next.js lo aplica a sus scripts. `script-src` no incluye
-  `'unsafe-inline'`.
+  `'unsafe-inline'`, así que un script inyectado no puede ejecutarse ni aunque
+  se saltara el saneador del Markdown.
 - **Sin indexación.** La experiencia entera es privada, y hay tres capas
   independientes para que ningún buscador la indexe:
   - `X-Robots-Tag: noindex, nofollow, noarchive` en **todas** las respuestas,

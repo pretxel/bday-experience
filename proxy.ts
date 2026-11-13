@@ -25,9 +25,17 @@ function buildContentSecurityPolicy(nonce: string): string {
 
   return [
     "default-src 'self'",
-    // `strict-dynamic` lets the nonced bootstrap script load the chunks it
-    // needs; older browsers fall back to `'self'`.
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${
+    /*
+     * The nonce covers the inline bootstrap scripts, and `'self'` covers the
+     * chunks, which are all served from this origin.
+     *
+     * `'strict-dynamic'` is deliberately NOT used. It makes the browser
+     * ignore `'self'`, and the Turbopack HMR client is injected as a script
+     * tag without a nonce — so it gets blocked, its dynamic import fails
+     * with a ChunkLoadError, and the dev runtime answers with a full page
+     * reload. That produced an endless reload loop in development.
+     */
+    `script-src 'self' 'nonce-${nonce}'${
       isDevelopment ? " 'unsafe-eval'" : ""
     }`,
     // Inline styles are still needed for the ambient background and for the

@@ -318,6 +318,29 @@ async function main() {
 
   // ---------------------------------------------------------------- errors --
   console.log("\nRuntime");
+
+  /*
+   * Regression guard: a Content-Security-Policy that blocks the Turbopack
+   * HMR client makes the dev runtime fall back to a full page reload, which
+   * turns into an endless reload loop. The symptom is a page that reloaded
+   * itself several times a second, so we count document loads over a window.
+   */
+  const documentLoads = [];
+  page.on("request", (request) => {
+    if (request.resourceType() === "document") {
+      documentLoads.push(request.url());
+    }
+  });
+
+  await page.goto(`${BASE_URL}/${SLUG}/carta`, { waitUntil: "domcontentloaded" });
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+
+  check(
+    "the page does not reload itself in a loop",
+    documentLoads.length <= 2,
+    `${documentLoads.length} document loads in 5s`,
+  );
+
   const relevantErrors = consoleErrors.filter(
     (error) =>
       !error.includes("net::ERR_ABORTED") &&

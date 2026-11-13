@@ -167,6 +167,10 @@ The system SHALL set a Content-Security-Policy with a per-request nonce that all
 - **WHEN** a page is loaded in a browser that enforces the policy
 - **THEN** the application hydrates and works, and no policy violation is reported
 
+#### Scenario: The policy does not make the page reload itself
+- **WHEN** a page is left open in a browser
+- **THEN** the document is not reloaded repeatedly, and the framework's own scripts and chunks load normally
+
 #### Scenario: Private route metadata
 - **WHEN** a private page is rendered
 - **THEN** the page emits robot metadata instructing search engines not to index or follow it
